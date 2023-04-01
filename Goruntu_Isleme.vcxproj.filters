@@ -30,12 +30,18 @@
     <ClInclude Include="stb_image_writer.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
+    <ClInclude Include="Processing.h">
+      <Filter>Üst Bilgi Dosyaları</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Kaynak Dosyaları</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
+      <Filter>Kaynak Dosyaları</Filter>
+    </ClCompile>
+    <ClCompile Include="Processing.cpp">
       <Filter>Kaynak Dosyaları</Filter>
     </ClCompile>
   </ItemGroup>

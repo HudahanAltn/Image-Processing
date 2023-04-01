@@ -10,7 +10,8 @@ void main(array<String^>^ args)
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);
 
-	/*MyForm form;
-	Application::Run(% form);*/
+	MyForm form;
+	Application::Run(% form);
+
 
 }
