@@ -69,27 +69,27 @@ image OtsuThresholding(image im, int* hist) {
 	binaryImage.h = im.h;
 	binaryImage.c = 1;
 
-	int Tm1, Tm2;
+	int Tm1, Tm2;//gerçek tepe deðerleri.
 
-	int T1 = 0, T2 = 255;
-
-
-
+	int T1 = 0, T2 = 255;// gerçek deðerleri bulmak için kullanacaðýmýz baþlangýç deðerleri.
 
 	int ortancaDeger = T2 - (T2 - T1) / 2;
 
 	int T1bas = T1;
 	int T2bas = T2;
 
+	//algoritmanýn bir sonraki T adýmlarý
 	int T1Ussu = 0;
 	int T2Ussu = 0;
 
 
 
 	while (true) {
+
 		unsigned long long T1UssuPay = 0, T1UssuPayda = 1;
 		unsigned long long T2UssuPay = 0, T2UssuPayda = 1;
 
+		// for döngüsü ile hesaplanan ortanca deðerin altýnda kalanlar için  T1 ve T2 için pay ve payda deðerleri hesaplanýr.
 		for (int i = 0; i < 256; i++) {
 
 			if (i < ortancaDeger) {
@@ -105,17 +105,19 @@ image OtsuThresholding(image im, int* hist) {
 
 		}
 
+		//T1' ve T2' hesaplanýr.
 
 		T1Ussu = T1UssuPay / (T1UssuPayda);
 		T2Ussu = T2UssuPay / (T2UssuPayda);
 
+		// Gerçek tepe deðerleri T1 == T1' ve T2 == T2' eþit olunca bulunanan deðerlerdir.
 		if (T1bas == T1Ussu && T2bas == T2Ussu) {
 
 			Tm1 = T1Ussu;
 			Tm2 = T2Ussu;
 			break;
 		}
-		else {
+		else {//deðilse algoritma bir adým ilerletilir.
 
 			T1bas = T1Ussu;
 			T2bas = T2Ussu;
@@ -125,18 +127,18 @@ image OtsuThresholding(image im, int* hist) {
 
 
 	//int Threshold = Tm2 - (Tm2 - Tm1) / 2;
-	int Threshold = static_cast<int>(Tm2 - (Tm2 - Tm1) / 2);
+	int Threshold = static_cast<int>(Tm2 - (Tm2 - Tm1) / 2);// ilgli threshold bulunur.
 
-	long newpos = 0;
+	long newpos = 0;// gri seviye resmin bellek adresini gösteren iþaret
 
-	for (int row = 0; row < im.h; row++) {
+	for (int row = 0; row < im.h; row++) {// gri seviye resmin her bir pixeli alýnýr.
 		for (int column = 0; column < im.w; column++) {
 
 			newpos = row * im.w + column;
-			int griDeger = im.data[newpos];
+			int griDeger = im.data[newpos];// bir pixelin gri deðeri alýnýr.
 
 
-			if (griDeger < Threshold) {
+			if (griDeger < Threshold) {// eþik deðeri ile kýyaslanýr ve ona göre ilgili pixele beyaz veya siyah renk atanýr.
 
 				binaryImage.data[newpos] = unsigned char(0);
 
@@ -151,4 +153,97 @@ image OtsuThresholding(image im, int* hist) {
 	}
 
 	return binaryImage;
+}
+
+
+unsigned char EuclideanDistance(float data, float* kmeans, int k) {
+
+	float min, distance, key;
+
+	min = abs(data - kmeans[0]);
+
+	key = 0;
+
+	for (int i = 1; i < k; i++) {
+
+		distance = abs(data - kmeans[i]);
+		if (min > distance) {
+			min = distance;
+			key = i;
+		}
+	}
+
+	return unsigned char(key);
+
+}
+
+float* KMeans_Eucliden(image im, int k) {
+
+	float* kmeans = new float[k](); // kümeleme merkezleri
+	float* sum = new float[k](); // kümeleme merkezlerinin toplamlarý
+	int* count = new int[k](); // kümeleme merkezlerine ait eleman sayýlarý
+
+	// Baþlangýç kümeleme merkezleri rastgele seçilir
+	for (int i = 0; i < k; i++) {
+		kmeans[i] = im.data[rand() % (im.w * im.h)];
+	}
+
+	bool converged = false;
+
+	while (!converged) {
+
+		converged = true;
+
+		// Yeni kümeleme merkezleri hesaplanýr
+		for (int i = 0; i < im.w * im.h; i++) {
+
+			unsigned char label = EuclideanDistance(im.data[i], kmeans, k);
+			sum[label] += im.data[i];
+			count[label]++;
+		}
+
+		for (int i = 0; i < k; i++) {
+
+			float new_mean = count[i] ? sum[i] / count[i] : 0;
+
+			if (kmeans[i] != new_mean) {
+				converged = false;
+			}
+
+			kmeans[i] = new_mean;
+			sum[i] = 0;
+			count[i] = 0;
+		}
+	}
+
+	delete[] sum;
+	delete[] count;
+	return kmeans;
+}
+
+
+image KBasedSegmentation(image im, float* kmeans, int k) {
+	image binaryImage;
+
+	if (k == 2) {// kümeleme algoritmasý için 2 ana küme olmalý ve gelne pixelleri bu iki kümeye göre uzaklýklarýna göre sýnýflandýrýlmalý.
+
+		binaryImage.w = im.w;
+		binaryImage.h = im.h;
+		binaryImage.c = im.c;
+		binaryImage.data = new unsigned char[binaryImage.w * binaryImage.h * binaryImage.c];
+
+
+		for (int i = 0; i < binaryImage.w * binaryImage.h; i++) {//gri sev resmin her bir pixelinde dolanýyoruz.
+
+			//öklid uzaklýðýný temel alarak hangi kümeye iligli deðer daha yakýdna siyah vye beyaz renk setliyoruz.
+			if (EuclideanDistance(im.data[i], kmeans, k)) {
+				binaryImage.data[i] = 0;
+			}
+			else {
+				binaryImage.data[i] = 255;
+			}
+		}
+
+		return binaryImage;
+	}
 }

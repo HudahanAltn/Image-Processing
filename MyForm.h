@@ -61,6 +61,8 @@ private:
 	int binaryImg_w, binaryImg_h, binaryImg_c;
 
 private: System::Windows::Forms::ToolStripMenuItem^ convertBinaryToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ kMeansClusteringToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ otsuThresholdingToolStripMenuItem;
 
 
 
@@ -151,9 +153,9 @@ private: System::Windows::Forms::ToolStripMenuItem^ convertBinaryToolStripMenuIt
 	   }
 	   void InitializeComponent(void)
 	   {
-		   System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea3 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-		   System::Windows::Forms::DataVisualization::Charting::Legend^ legend3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-		   System::Windows::Forms::DataVisualization::Charting::Series^ series3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+		   System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea2 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+		   System::Windows::Forms::DataVisualization::Charting::Legend^ legend2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+		   System::Windows::Forms::DataVisualization::Charting::Series^ series2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 		   this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 		   this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -163,6 +165,8 @@ private: System::Windows::Forms::ToolStripMenuItem^ convertBinaryToolStripMenuIt
 		   this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 		   this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 		   this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
+		   this->kMeansClusteringToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->otsuThresholdingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->menuStrip1->SuspendLayout();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
@@ -177,7 +181,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ convertBinaryToolStripMenuIt
 		   });
 		   this->menuStrip1->Location = System::Drawing::Point(0, 0);
 		   this->menuStrip1->Name = L"menuStrip1";
-		   this->menuStrip1->Size = System::Drawing::Size(1217, 30);
+		   this->menuStrip1->Size = System::Drawing::Size(1217, 28);
 		   this->menuStrip1->TabIndex = 0;
 		   this->menuStrip1->Text = L"menuStrip1";
 		   // 
@@ -208,16 +212,20 @@ private: System::Windows::Forms::ToolStripMenuItem^ convertBinaryToolStripMenuIt
 		   // convertGrayScaleToolStripMenuItem
 		   // 
 		   this->convertGrayScaleToolStripMenuItem->Name = L"convertGrayScaleToolStripMenuItem";
-		   this->convertGrayScaleToolStripMenuItem->Size = System::Drawing::Size(216, 26);
+		   this->convertGrayScaleToolStripMenuItem->Size = System::Drawing::Size(224, 26);
 		   this->convertGrayScaleToolStripMenuItem->Text = L"Convert Gray Scale";
 		   this->convertGrayScaleToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::convertGrayScaleToolStripMenuItem_Click);
 		   // 
 		   // convertBinaryToolStripMenuItem
 		   // 
+		   this->convertBinaryToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+			   this->kMeansClusteringToolStripMenuItem,
+				   this->otsuThresholdingToolStripMenuItem
+		   });
 		   this->convertBinaryToolStripMenuItem->Name = L"convertBinaryToolStripMenuItem";
-		   this->convertBinaryToolStripMenuItem->Size = System::Drawing::Size(216, 26);
+		   this->convertBinaryToolStripMenuItem->Size = System::Drawing::Size(224, 26);
 		   this->convertBinaryToolStripMenuItem->Text = L"Convert Binary";
-		   this->convertBinaryToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::convertBinaryToolStripMenuItem_Click);
+		   
 		   // 
 		   // pictureBox1
 		   // 
@@ -233,20 +241,34 @@ private: System::Windows::Forms::ToolStripMenuItem^ convertBinaryToolStripMenuIt
 		   // 
 		   // chart1
 		   // 
-		   chartArea3->Name = L"ChartArea1";
-		   this->chart1->ChartAreas->Add(chartArea3);
-		   legend3->Name = L"Legend1";
-		   this->chart1->Legends->Add(legend3);
+		   chartArea2->Name = L"ChartArea1";
+		   this->chart1->ChartAreas->Add(chartArea2);
+		   legend2->Name = L"Legend1";
+		   this->chart1->Legends->Add(legend2);
 		   this->chart1->Location = System::Drawing::Point(756, 45);
 		   this->chart1->Name = L"chart1";
-		   series3->ChartArea = L"ChartArea1";
-		   series3->Legend = L"Legend1";
-		   series3->Name = L"Histogram";
-		   this->chart1->Series->Add(series3);
+		   series2->ChartArea = L"ChartArea1";
+		   series2->Legend = L"Legend1";
+		   series2->Name = L"Histogram";
+		   this->chart1->Series->Add(series2);
 		   this->chart1->Size = System::Drawing::Size(1000, 348);
 		   this->chart1->TabIndex = 2;
 		   this->chart1->Text = L"chart1";
 		   this->chart1->Visible = false;
+		   // 
+		   // kMeansClusteringToolStripMenuItem
+		   // 
+		   this->kMeansClusteringToolStripMenuItem->Name = L"kMeansClusteringToolStripMenuItem";
+		   this->kMeansClusteringToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->kMeansClusteringToolStripMenuItem->Text = L"KMeans Clustering";
+		   this->kMeansClusteringToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::kMeansClusteringToolStripMenuItem_Click);
+		   // 
+		   // otsuThresholdingToolStripMenuItem
+		   // 
+		   this->otsuThresholdingToolStripMenuItem->Name = L"otsuThresholdingToolStripMenuItem";
+		   this->otsuThresholdingToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->otsuThresholdingToolStripMenuItem->Text = L"Otsu Thresholding";
+		   this->otsuThresholdingToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::otsuThresholdingToolStripMenuItem_Click);
 		   // 
 		   // MyForm
 		   // 
@@ -303,7 +325,7 @@ private: System::Void convertGrayScaleToolStripMenuItem_Click(System::Object^ se
 
 	if (grayImg_data == NULL) {
 
-		MessageBox::Show("Okunacak görüntü dosyasý önceden seçilmelidir.");
+		MessageBox::Show("Gri seviye dönüþüm için önce RGB görüntü dosyasý seçilmelidir.");
 	}
 	else {
 
@@ -340,8 +362,40 @@ private: System::Void convertGrayScaleToolStripMenuItem_Click(System::Object^ se
 
 }
 
-private: System::Void convertBinaryToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 
+private: System::Void kMeansClusteringToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	if (binaryImg_data == NULL) {
+
+		MessageBox::Show("Gri Seviye görüntü olmadan binary seviyeye dönüþüm yapýlamaz");
+	}
+	else {
+
+		image im;
+		im.w = binaryImg_w;
+		im.h = binaryImg_h;
+		im.c = binaryImg_c;
+		im.data = binaryImg_data;
+
+		//image im2 = OtsuThresholding(im, hist);
+		int k = 2;
+		float* kmeans = KMeans_Eucliden(im, k);
+		image im2 = KBasedSegmentation(im, kmeans, k);
+
+		ShowBinaryImage(im2);
+
+		//chart1->Visible = true;// ilk baþta chart görünmez histgorama týklayýnca görünür hale gelsin
+		//chart1->Series["Histogram"]->Points->Clear();// chart ilk baþta sýfýrlansýn
+		////chart1->Series["KMeans"]->Points->Clear();
+
+		//chart1->Location = System::Drawing::Point(pictureBox1->Width + 20, 34);
+
+		//for (int i = 0; i < 256; i++) {
+		//	chart1->Series["Histogram"]->Points->AddXY(i, hist[i]);
+		//}
+	}
+}
+private: System::Void otsuThresholdingToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 
 	if (binaryImg_data == NULL) {
 
@@ -356,6 +410,7 @@ private: System::Void convertBinaryToolStripMenuItem_Click(System::Object^ sende
 		im.data = binaryImg_data;
 
 		image im2 = OtsuThresholding(im, hist);
+	
 
 		ShowBinaryImage(im2);
 
@@ -369,8 +424,5 @@ private: System::Void convertBinaryToolStripMenuItem_Click(System::Object^ sende
 		//	chart1->Series["Histogram"]->Points->AddXY(i, hist[i]);
 		//}
 	}
-
-
 }
-
 };
