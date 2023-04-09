@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Image.h";
 #include "Clustering.h";
+#include "Morphology.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -52,17 +53,27 @@ private:
 	///Gerekli tasarýmcý deðiþkeni.
 	/// </summary>
 
+
 	int* hist = NULL;//grayscale resmin histogramýný iþaret eden pointer
-	int* hist2 = NULL;
+
+	unsigned char* RGBImg_data = NULL; // alýnan görüntünün deðerleininin tüm class bazýnda kullanýlmasý için yaratýlan veri üyeleri.sýnýf içinde globalleþtirdik.
+	int RGBImg_w, RGBImg_h, RGBImg_c;
+
 	unsigned char* grayImg_data = NULL; // alýnan görüntünün deðerleininin tüm class bazýnda kullanýlmasý için yaratýlan veri üyeleri.sýnýf içinde globalleþtirdik.
 	int grayImg_w, grayImg_h, grayImg_c;
 
 	unsigned char* binaryImg_data = NULL; // alýnan görüntünün deðerleininin tüm class bazýnda kullanýlmasý için yaratýlan veri üyeleri.sýnýf içinde globalleþtirdik.
 	int binaryImg_w, binaryImg_h, binaryImg_c;
 
+	unsigned char* morphImg_data = NULL;
+	int morphImg_w, morphImg_h, morphImg_c;
+
 private: System::Windows::Forms::ToolStripMenuItem^ convertBinaryToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ kMeansClusteringToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ otsuThresholdingToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ morphologyToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ dilationToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 
 
 
@@ -162,11 +173,14 @@ private: System::Windows::Forms::ToolStripMenuItem^ otsuThresholdingToolStripMen
 		   this->processingTypeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->convertGrayScaleToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->convertBinaryToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->kMeansClusteringToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->otsuThresholdingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 		   this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 		   this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
-		   this->kMeansClusteringToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-		   this->otsuThresholdingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->morphologyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->dilationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->erosionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->menuStrip1->SuspendLayout();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
@@ -175,9 +189,9 @@ private: System::Windows::Forms::ToolStripMenuItem^ otsuThresholdingToolStripMen
 		   // menuStrip1
 		   // 
 		   this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
-		   this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+		   this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
 			   this->fileToolStripMenuItem,
-				   this->processingTypeToolStripMenuItem
+				   this->processingTypeToolStripMenuItem, this->morphologyToolStripMenuItem
 		   });
 		   this->menuStrip1->Location = System::Drawing::Point(0, 0);
 		   this->menuStrip1->Name = L"menuStrip1";
@@ -212,7 +226,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ otsuThresholdingToolStripMen
 		   // convertGrayScaleToolStripMenuItem
 		   // 
 		   this->convertGrayScaleToolStripMenuItem->Name = L"convertGrayScaleToolStripMenuItem";
-		   this->convertGrayScaleToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->convertGrayScaleToolStripMenuItem->Size = System::Drawing::Size(216, 26);
 		   this->convertGrayScaleToolStripMenuItem->Text = L"Convert Gray Scale";
 		   this->convertGrayScaleToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::convertGrayScaleToolStripMenuItem_Click);
 		   // 
@@ -223,9 +237,22 @@ private: System::Windows::Forms::ToolStripMenuItem^ otsuThresholdingToolStripMen
 				   this->otsuThresholdingToolStripMenuItem
 		   });
 		   this->convertBinaryToolStripMenuItem->Name = L"convertBinaryToolStripMenuItem";
-		   this->convertBinaryToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->convertBinaryToolStripMenuItem->Size = System::Drawing::Size(216, 26);
 		   this->convertBinaryToolStripMenuItem->Text = L"Convert Binary";
-		   
+		   // 
+		   // kMeansClusteringToolStripMenuItem
+		   // 
+		   this->kMeansClusteringToolStripMenuItem->Name = L"kMeansClusteringToolStripMenuItem";
+		   this->kMeansClusteringToolStripMenuItem->Size = System::Drawing::Size(214, 26);
+		   this->kMeansClusteringToolStripMenuItem->Text = L"KMeans Clustering";
+		   this->kMeansClusteringToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::kMeansClusteringToolStripMenuItem_Click);
+		   // 
+		   // otsuThresholdingToolStripMenuItem
+		   // 
+		   this->otsuThresholdingToolStripMenuItem->Name = L"otsuThresholdingToolStripMenuItem";
+		   this->otsuThresholdingToolStripMenuItem->Size = System::Drawing::Size(214, 26);
+		   this->otsuThresholdingToolStripMenuItem->Text = L"Otsu Thresholding";
+		   this->otsuThresholdingToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::otsuThresholdingToolStripMenuItem_Click);
 		   // 
 		   // pictureBox1
 		   // 
@@ -256,19 +283,29 @@ private: System::Windows::Forms::ToolStripMenuItem^ otsuThresholdingToolStripMen
 		   this->chart1->Text = L"chart1";
 		   this->chart1->Visible = false;
 		   // 
-		   // kMeansClusteringToolStripMenuItem
+		   // morphologyToolStripMenuItem
 		   // 
-		   this->kMeansClusteringToolStripMenuItem->Name = L"kMeansClusteringToolStripMenuItem";
-		   this->kMeansClusteringToolStripMenuItem->Size = System::Drawing::Size(224, 26);
-		   this->kMeansClusteringToolStripMenuItem->Text = L"KMeans Clustering";
-		   this->kMeansClusteringToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::kMeansClusteringToolStripMenuItem_Click);
+		   this->morphologyToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+			   this->dilationToolStripMenuItem,
+				   this->erosionToolStripMenuItem
+		   });
+		   this->morphologyToolStripMenuItem->Name = L"morphologyToolStripMenuItem";
+		   this->morphologyToolStripMenuItem->Size = System::Drawing::Size(105, 24);
+		   this->morphologyToolStripMenuItem->Text = L"Morphology";
 		   // 
-		   // otsuThresholdingToolStripMenuItem
+		   // dilationToolStripMenuItem
 		   // 
-		   this->otsuThresholdingToolStripMenuItem->Name = L"otsuThresholdingToolStripMenuItem";
-		   this->otsuThresholdingToolStripMenuItem->Size = System::Drawing::Size(224, 26);
-		   this->otsuThresholdingToolStripMenuItem->Text = L"Otsu Thresholding";
-		   this->otsuThresholdingToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::otsuThresholdingToolStripMenuItem_Click);
+		   this->dilationToolStripMenuItem->Name = L"dilationToolStripMenuItem";
+		   this->dilationToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->dilationToolStripMenuItem->Text = L"Dilation";
+		   this->dilationToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::dilationToolStripMenuItem_Click);
+		   // 
+		   // erosionToolStripMenuItem
+		   // 
+		   this->erosionToolStripMenuItem->Name = L"erosionToolStripMenuItem";
+		   this->erosionToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->erosionToolStripMenuItem->Text = L"Erosion";
+		   this->erosionToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::erosionToolStripMenuItem_Click);
 		   // 
 		   // MyForm
 		   // 
@@ -304,10 +341,10 @@ private: System::Void openToolStripMenuItem_Click(System::Object^ sender, System
 	   resim image.h klasörnde tanýmladýðýmýz struct tipindedir.*/
 
 	   // global deðikenlere shallow copy
-		grayImg_data = im.data;
-		grayImg_w = im.w;
-		grayImg_h = im.h;
-		grayImg_c = im.c;
+		RGBImg_data = im.data;
+		RGBImg_w = im.w;
+		RGBImg_h = im.h;
+		RGBImg_c = im.c;
 
 		ShowRGBImage(im);// rgb resim picturebox'ta gösterilir.
 
@@ -323,27 +360,27 @@ private: System::Void convertGrayScaleToolStripMenuItem_Click(System::Object^ se
 
 	//RGB ---> intensity
 
-	if (grayImg_data == NULL) {
+	if (RGBImg_data == NULL) {
 
 		MessageBox::Show("Gri seviye dönüþüm için önce RGB görüntü dosyasý seçilmelidir.");
 	}
 	else {
 
 		image im;
-		im.w = grayImg_w;
-		im.h = grayImg_h;
-		im.c = grayImg_c;
-		im.data = grayImg_data;
+		im.w = RGBImg_w;
+		im.h = RGBImg_h;
+		im.c = RGBImg_c;
+		im.data = RGBImg_data;
 
 		image im2 = convertGrayScale(im);
 		ShowGrayScaleImage(im2);
 		hist = createHistogram(im2);
 
 		//binary dönüþümü için gri seviye görüntü deðerlerini global deðiþkenlere atadýk
-		binaryImg_data = im2.data;
-		binaryImg_w = im2.w;
-		binaryImg_h = im2.h;
-		binaryImg_c = im2.c;
+		grayImg_data = im2.data;
+		grayImg_w = im2.w;
+		grayImg_h = im2.h;
+		grayImg_c = im2.c;
 		//burada itibaren k-means clustering ile resmi binary ye çevirmemiz gerekecek.
 		//raw_Data = im2.data;
 
@@ -365,17 +402,17 @@ private: System::Void convertGrayScaleToolStripMenuItem_Click(System::Object^ se
 
 private: System::Void kMeansClusteringToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 
-	if (binaryImg_data == NULL) {
+	if (grayImg_data == NULL) {
 
 		MessageBox::Show("Gri Seviye görüntü olmadan binary seviyeye dönüþüm yapýlamaz");
 	}
 	else {
 
 		image im;
-		im.w = binaryImg_w;
-		im.h = binaryImg_h;
-		im.c = binaryImg_c;
-		im.data = binaryImg_data;
+		im.w = grayImg_w;
+		im.h = grayImg_h;
+		im.c = grayImg_c;
+		im.data = grayImg_data;
 
 		//image im2 = OtsuThresholding(im, hist);
 		int k = 2;
@@ -383,6 +420,36 @@ private: System::Void kMeansClusteringToolStripMenuItem_Click(System::Object^ se
 		image im2 = KBasedSegmentation(im, kmeans, k);
 
 		ShowBinaryImage(im2);
+		binaryImg_data = im2.data;
+		binaryImg_w = im2.w;
+		binaryImg_h = im2.h;
+		binaryImg_c = im2.c;
+	
+	}
+}
+private: System::Void otsuThresholdingToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	if (grayImg_data == NULL) {
+
+		MessageBox::Show("Gri Seviye görüntü olmadan binary seviyeye dönüþüm yapýlamaz");
+	}
+	else {
+
+		image im;
+		im.w = grayImg_w;
+		im.h = grayImg_h;
+		im.c = grayImg_c;
+		im.data = grayImg_data;
+
+		image im2 = OtsuThresholding(im, hist);
+
+
+		ShowBinaryImage(im2);
+
+		binaryImg_data = im2.data;
+		binaryImg_w = im2.w;
+		binaryImg_h = im2.h;
+		binaryImg_c = im2.c;
 
 		//chart1->Visible = true;// ilk baþta chart görünmez histgorama týklayýnca görünür hale gelsin
 		//chart1->Series["Histogram"]->Points->Clear();// chart ilk baþta sýfýrlansýn
@@ -395,34 +462,106 @@ private: System::Void kMeansClusteringToolStripMenuItem_Click(System::Object^ se
 		//}
 	}
 }
-private: System::Void otsuThresholdingToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+private: System::Void dilationToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 
 	if (binaryImg_data == NULL) {
 
-		MessageBox::Show("Gri Seviye görüntü olmadan binary seviyeye dönüþüm yapýlamaz");
+		MessageBox::Show("Morfolojik iþlemler binary görüntü üzerinde yapýlýr.Önce binary görüntü elde edin!");
 	}
 	else {
 
-		image im;
-		im.w = binaryImg_w;
-		im.h = binaryImg_h;
-		im.c = binaryImg_c;
-		im.data = binaryImg_data;
+		if (morphImg_data == NULL) {//ilk kez morfolojik iþlem yapýlýyorsa
 
-		image im2 = OtsuThresholding(im, hist);
-	
+			image im;
+			im.w = binaryImg_w;
+			im.h = binaryImg_h;
+			im.c = binaryImg_c;
+			im.data = binaryImg_data;
 
-		ShowBinaryImage(im2);
+			image im2 = Dilation(im);
 
-		//chart1->Visible = true;// ilk baþta chart görünmez histgorama týklayýnca görünür hale gelsin
-		//chart1->Series["Histogram"]->Points->Clear();// chart ilk baþta sýfýrlansýn
-		////chart1->Series["KMeans"]->Points->Clear();
+			ShowBinaryImage(im2);
 
-		//chart1->Location = System::Drawing::Point(pictureBox1->Width + 20, 34);
+			morphImg_data = im2.data;
+			morphImg_w = im2.w;
+			morphImg_h = im2.h;
+			morphImg_c = im2.c;
 
-		//for (int i = 0; i < 256; i++) {
-		//	chart1->Series["Histogram"]->Points->AddXY(i, hist[i]);
-		//}
+
+
+		}
+		else {//morfolojik iþlemin üzerine bir daha morfolojik iþlem yapýlacaksa
+
+			image im;
+			im.w = morphImg_w;
+			im.h = morphImg_h;
+			im.c = morphImg_c;
+			im.data = morphImg_data;
+
+			image im2 = Dilation(im);
+
+			ShowBinaryImage(im2);
+
+			morphImg_data = im2.data;
+			morphImg_w = im2.w;
+			morphImg_h = im2.h;
+			morphImg_c = im2.c;
+
+
+		}
+
+
+	}
+}
+private: System::Void erosionToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	if (binaryImg_data == NULL) {
+
+		MessageBox::Show("Morfolojik iþlemler binary görüntü üzerinde yapýlýr.Önce binary görüntü elde edin!");
+	}
+	else {
+
+		if (morphImg_data == NULL) {//ilk kez morfolojik iþlem yapýlýyorsa
+
+			image im;
+			im.w = binaryImg_w;
+			im.h = binaryImg_h;
+			im.c = binaryImg_c;
+			im.data = binaryImg_data;
+
+			image im2 = Erosion(im);
+
+			ShowBinaryImage(im2);
+
+			morphImg_data = im2.data;
+			morphImg_w = im2.w;
+			morphImg_h = im2.h;
+			morphImg_c = im2.c;
+
+
+
+		}
+		else {//morfolojik iþlemin üzerine bir daha morfolojik iþlem yapýlacaksa
+
+			image im;
+			im.w = morphImg_w;
+			im.h = morphImg_h;
+			im.c = morphImg_c;
+			im.data = morphImg_data;
+
+			image im2 = Erosion(im);
+
+			ShowBinaryImage(im2);
+
+			morphImg_data = im2.data;
+			morphImg_w = im2.w;
+			morphImg_h = im2.h;
+			morphImg_c = im2.c;
+
+
+		}
+
+
 	}
 }
 };

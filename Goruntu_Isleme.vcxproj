@@ -124,10 +124,12 @@
     <ClCompile Include="Clustering.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Morphology.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clustering.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Morphology.h" />
     <ClInclude Include="MyForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
