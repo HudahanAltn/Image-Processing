@@ -8,7 +8,6 @@ typedef struct image {// görüntü temsili için basit struct yapýsý
 	int h;//yükseklik
 	int c;//rgb color uzayý deðeri
 	unsigned char* data;//bu bizim görüntümüzün bellekteki yerini gösteren pointer.
-
 } image;
 
 image loadImage(const char* filename);

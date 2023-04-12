@@ -164,9 +164,9 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 	   }
 	   void InitializeComponent(void)
 	   {
-		   System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea2 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-		   System::Windows::Forms::DataVisualization::Charting::Legend^ legend2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-		   System::Windows::Forms::DataVisualization::Charting::Series^ series2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+		   System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+		   System::Windows::Forms::DataVisualization::Charting::Legend^ legend1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+		   System::Windows::Forms::DataVisualization::Charting::Series^ series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 		   this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 		   this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -175,12 +175,12 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   this->convertBinaryToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->kMeansClusteringToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->otsuThresholdingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-		   this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
-		   this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
-		   this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
 		   this->morphologyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->dilationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->erosionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+		   this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
+		   this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
 		   this->menuStrip1->SuspendLayout();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
@@ -195,7 +195,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   });
 		   this->menuStrip1->Location = System::Drawing::Point(0, 0);
 		   this->menuStrip1->Name = L"menuStrip1";
-		   this->menuStrip1->Size = System::Drawing::Size(1217, 28);
+		   this->menuStrip1->Size = System::Drawing::Size(1360, 28);
 		   this->menuStrip1->TabIndex = 0;
 		   this->menuStrip1->Text = L"menuStrip1";
 		   // 
@@ -254,35 +254,6 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   this->otsuThresholdingToolStripMenuItem->Text = L"Otsu Thresholding";
 		   this->otsuThresholdingToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::otsuThresholdingToolStripMenuItem_Click);
 		   // 
-		   // pictureBox1
-		   // 
-		   this->pictureBox1->Location = System::Drawing::Point(12, 45);
-		   this->pictureBox1->Name = L"pictureBox1";
-		   this->pictureBox1->Size = System::Drawing::Size(682, 496);
-		   this->pictureBox1->TabIndex = 1;
-		   this->pictureBox1->TabStop = false;
-		   // 
-		   // openFileDialog1
-		   // 
-		   this->openFileDialog1->FileName = L"openFileDialog1";
-		   // 
-		   // chart1
-		   // 
-		   chartArea2->Name = L"ChartArea1";
-		   this->chart1->ChartAreas->Add(chartArea2);
-		   legend2->Name = L"Legend1";
-		   this->chart1->Legends->Add(legend2);
-		   this->chart1->Location = System::Drawing::Point(756, 45);
-		   this->chart1->Name = L"chart1";
-		   series2->ChartArea = L"ChartArea1";
-		   series2->Legend = L"Legend1";
-		   series2->Name = L"Histogram";
-		   this->chart1->Series->Add(series2);
-		   this->chart1->Size = System::Drawing::Size(1000, 348);
-		   this->chart1->TabIndex = 2;
-		   this->chart1->Text = L"chart1";
-		   this->chart1->Visible = false;
-		   // 
 		   // morphologyToolStripMenuItem
 		   // 
 		   this->morphologyToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
@@ -296,22 +267,52 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   // dilationToolStripMenuItem
 		   // 
 		   this->dilationToolStripMenuItem->Name = L"dilationToolStripMenuItem";
-		   this->dilationToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->dilationToolStripMenuItem->Size = System::Drawing::Size(145, 26);
 		   this->dilationToolStripMenuItem->Text = L"Dilation";
 		   this->dilationToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::dilationToolStripMenuItem_Click);
 		   // 
 		   // erosionToolStripMenuItem
 		   // 
 		   this->erosionToolStripMenuItem->Name = L"erosionToolStripMenuItem";
-		   this->erosionToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->erosionToolStripMenuItem->Size = System::Drawing::Size(145, 26);
 		   this->erosionToolStripMenuItem->Text = L"Erosion";
 		   this->erosionToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::erosionToolStripMenuItem_Click);
+		   // 
+		   // pictureBox1
+		   // 
+		   this->pictureBox1->Location = System::Drawing::Point(12, 45);
+		   this->pictureBox1->Margin = System::Windows::Forms::Padding(4);
+		   this->pictureBox1->Name = L"pictureBox1";
+		   this->pictureBox1->Size = System::Drawing::Size(800, 552);
+		   this->pictureBox1->TabIndex = 1;
+		   this->pictureBox1->TabStop = false;
+		   // 
+		   // openFileDialog1
+		   // 
+		   this->openFileDialog1->FileName = L"openFileDialog1";
+		   // 
+		   // chart1
+		   // 
+		   chartArea1->Name = L"ChartArea1";
+		   this->chart1->ChartAreas->Add(chartArea1);
+		   legend1->Name = L"Legend1";
+		   this->chart1->Legends->Add(legend1);
+		   this->chart1->Location = System::Drawing::Point(838, 45);
+		   this->chart1->Name = L"chart1";
+		   series1->ChartArea = L"ChartArea1";
+		   series1->Legend = L"Legend1";
+		   series1->Name = L"Histogram";
+		   this->chart1->Series->Add(series1);
+		   this->chart1->Size = System::Drawing::Size(522, 347);
+		   this->chart1->TabIndex = 2;
+		   this->chart1->Text = L"chart1";
+		   this->chart1->Visible = false;
 		   // 
 		   // MyForm
 		   // 
 		   this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 		   this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-		   this->ClientSize = System::Drawing::Size(1217, 617);
+		   this->ClientSize = System::Drawing::Size(1360, 617);
 		   this->Controls->Add(this->chart1);
 		   this->Controls->Add(this->pictureBox1);
 		   this->Controls->Add(this->menuStrip1);

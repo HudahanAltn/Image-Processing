@@ -121,6 +121,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CCA.cpp" />
     <ClCompile Include="Clustering.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
