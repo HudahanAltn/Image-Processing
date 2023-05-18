@@ -123,12 +123,14 @@
   <ItemGroup>
     <ClCompile Include="CCA.cpp" />
     <ClCompile Include="Clustering.cpp" />
+    <ClCompile Include="GaussianFiltering.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Morphology.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clustering.h" />
+    <ClInclude Include="GaussianFiltering.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Morphology.h" />
     <ClInclude Include="MyForm.h">

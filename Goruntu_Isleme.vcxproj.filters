@@ -36,6 +36,9 @@
     <ClInclude Include="Morphology.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
+    <ClInclude Include="GaussianFiltering.h">
+      <Filter>Üst Bilgi Dosyaları</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,6 +54,9 @@
       <Filter>Kaynak Dosyaları</Filter>
     </ClCompile>
     <ClCompile Include="CCA.cpp">
+      <Filter>Kaynak Dosyaları</Filter>
+    </ClCompile>
+    <ClCompile Include="GaussianFiltering.cpp">
       <Filter>Kaynak Dosyaları</Filter>
     </ClCompile>
   </ItemGroup>
