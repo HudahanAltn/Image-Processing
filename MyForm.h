@@ -676,9 +676,29 @@ private: System::Void prewittToolStripMenuItem_Click(System::Object^ sender, Sys
 	}
 
 }
+
+
 private: System::Void cannyToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 
 	
+	if (grayImg_data == NULL) {
+
+		MessageBox::Show("Gri Seviye görüntü olmadan prewitt edge detection yapýlamaz");
+	}
+	else {
+
+		image im;
+		im.w = grayImg_w;
+		im.h = grayImg_h;
+		im.c = grayImg_c;
+		im.data = grayImg_data;
+
+		image im2 = cannyEdgeDetection(im);
+		
+
+		ShowBinaryImage(im2);
+
+	}
 
 }
 };
