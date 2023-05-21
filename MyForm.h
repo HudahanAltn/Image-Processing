@@ -67,11 +67,19 @@ private:
 
 	unsigned char* morphImg_data = NULL;
 	int morphImg_w, morphImg_h, morphImg_c;
+
+	unsigned char* blurredImg_data = NULL;
+	int blurredImg_w, blurredImg_h, blurredImg_c;
+
 private: System::Windows::Forms::ToolStripMenuItem^ cCAToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ hosheToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ findShapesToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ lineToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ circleToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ edgeDetectionToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ sobelToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ prewittToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ gaussianBlurToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ cannyToolStripMenuItem;
 
 
@@ -172,9 +180,9 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 	   }
 	   void InitializeComponent(void)
 	   {
-		   System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea4 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-		   System::Windows::Forms::DataVisualization::Charting::Legend^ legend4 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-		   System::Windows::Forms::DataVisualization::Charting::Series^ series4 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+		   System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea2 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+		   System::Windows::Forms::DataVisualization::Charting::Legend^ legend2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+		   System::Windows::Forms::DataVisualization::Charting::Series^ series2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 		   this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 		   this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -188,13 +196,17 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   this->erosionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->cCAToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->hosheToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-		   this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
-		   this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
-		   this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
 		   this->edgeDetectionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->sobelToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->prewittToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->gaussianBlurToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->cannyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+		   this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
+		   this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
+		   this->findShapesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->lineToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+		   this->circleToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 		   this->menuStrip1->SuspendLayout();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 		   (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
@@ -203,9 +215,10 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   // menuStrip1
 		   // 
 		   this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
-		   this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
+		   this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(6) {
 			   this->fileToolStripMenuItem,
-				   this->processingTypeToolStripMenuItem, this->morphologyToolStripMenuItem, this->cCAToolStripMenuItem, this->edgeDetectionToolStripMenuItem
+				   this->processingTypeToolStripMenuItem, this->morphologyToolStripMenuItem, this->cCAToolStripMenuItem, this->edgeDetectionToolStripMenuItem,
+				   this->findShapesToolStripMenuItem
 		   });
 		   this->menuStrip1->Location = System::Drawing::Point(0, 0);
 		   this->menuStrip1->Name = L"menuStrip1";
@@ -223,7 +236,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   // openToolStripMenuItem
 		   // 
 		   this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
-		   this->openToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->openToolStripMenuItem->Size = System::Drawing::Size(128, 26);
 		   this->openToolStripMenuItem->Text = L"Open";
 		   this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::openToolStripMenuItem_Click);
 		   // 
@@ -306,6 +319,44 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   this->hosheToolStripMenuItem->Text = L"Hoshen-Kopelman";
 		   this->hosheToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::hosheToolStripMenuItem_Click);
 		   // 
+		   // edgeDetectionToolStripMenuItem
+		   // 
+		   this->edgeDetectionToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+			   this->sobelToolStripMenuItem,
+				   this->prewittToolStripMenuItem, this->gaussianBlurToolStripMenuItem, this->cannyToolStripMenuItem
+		   });
+		   this->edgeDetectionToolStripMenuItem->Name = L"edgeDetectionToolStripMenuItem";
+		   this->edgeDetectionToolStripMenuItem->Size = System::Drawing::Size(126, 24);
+		   this->edgeDetectionToolStripMenuItem->Text = L"Edge Detection";
+		   // 
+		   // sobelToolStripMenuItem
+		   // 
+		   this->sobelToolStripMenuItem->Name = L"sobelToolStripMenuItem";
+		   this->sobelToolStripMenuItem->Size = System::Drawing::Size(176, 26);
+		   this->sobelToolStripMenuItem->Text = L"Sobel ";
+		   this->sobelToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::sobelToolStripMenuItem_Click);
+		   // 
+		   // prewittToolStripMenuItem
+		   // 
+		   this->prewittToolStripMenuItem->Name = L"prewittToolStripMenuItem";
+		   this->prewittToolStripMenuItem->Size = System::Drawing::Size(176, 26);
+		   this->prewittToolStripMenuItem->Text = L"Prewitt";
+		   this->prewittToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::prewittToolStripMenuItem_Click);
+		   // 
+		   // gaussianBlurToolStripMenuItem
+		   // 
+		   this->gaussianBlurToolStripMenuItem->Name = L"gaussianBlurToolStripMenuItem";
+		   this->gaussianBlurToolStripMenuItem->Size = System::Drawing::Size(176, 26);
+		   this->gaussianBlurToolStripMenuItem->Text = L"GaussianBlur";
+		   this->gaussianBlurToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::gaussianBlurToolStripMenuItem_Click);
+		   // 
+		   // cannyToolStripMenuItem
+		   // 
+		   this->cannyToolStripMenuItem->Name = L"cannyToolStripMenuItem";
+		   this->cannyToolStripMenuItem->Size = System::Drawing::Size(176, 26);
+		   this->cannyToolStripMenuItem->Text = L"Canny";
+		   this->cannyToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::cannyToolStripMenuItem_Click);
+		   // 
 		   // pictureBox1
 		   // 
 		   this->pictureBox1->Location = System::Drawing::Point(12, 45);
@@ -321,51 +372,44 @@ private: System::Windows::Forms::ToolStripMenuItem^ erosionToolStripMenuItem;
 		   // 
 		   // chart1
 		   // 
-		   chartArea4->Name = L"ChartArea1";
-		   this->chart1->ChartAreas->Add(chartArea4);
-		   legend4->Name = L"Legend1";
-		   this->chart1->Legends->Add(legend4);
+		   chartArea2->Name = L"ChartArea1";
+		   this->chart1->ChartAreas->Add(chartArea2);
+		   legend2->Name = L"Legend1";
+		   this->chart1->Legends->Add(legend2);
 		   this->chart1->Location = System::Drawing::Point(838, 45);
 		   this->chart1->Name = L"chart1";
-		   series4->ChartArea = L"ChartArea1";
-		   series4->Legend = L"Legend1";
-		   series4->Name = L"Histogram";
-		   this->chart1->Series->Add(series4);
+		   series2->ChartArea = L"ChartArea1";
+		   series2->Legend = L"Legend1";
+		   series2->Name = L"Histogram";
+		   this->chart1->Series->Add(series2);
 		   this->chart1->Size = System::Drawing::Size(522, 347);
 		   this->chart1->TabIndex = 2;
 		   this->chart1->Text = L"chart1";
 		   this->chart1->Visible = false;
 		   // 
-		   // edgeDetectionToolStripMenuItem
+		   // findShapesToolStripMenuItem
 		   // 
-		   this->edgeDetectionToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
-			   this->sobelToolStripMenuItem,
-				   this->prewittToolStripMenuItem, this->cannyToolStripMenuItem
+		   this->findShapesToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+			   this->lineToolStripMenuItem,
+				   this->circleToolStripMenuItem
 		   });
-		   this->edgeDetectionToolStripMenuItem->Name = L"edgeDetectionToolStripMenuItem";
-		   this->edgeDetectionToolStripMenuItem->Size = System::Drawing::Size(126, 24);
-		   this->edgeDetectionToolStripMenuItem->Text = L"Edge Detection";
+		   this->findShapesToolStripMenuItem->Name = L"findShapesToolStripMenuItem";
+		   this->findShapesToolStripMenuItem->Size = System::Drawing::Size(102, 24);
+		   this->findShapesToolStripMenuItem->Text = L"Find Shapes";
 		   // 
-		   // sobelToolStripMenuItem
+		   // lineToolStripMenuItem
 		   // 
-		   this->sobelToolStripMenuItem->Name = L"sobelToolStripMenuItem";
-		   this->sobelToolStripMenuItem->Size = System::Drawing::Size(224, 26);
-		   this->sobelToolStripMenuItem->Text = L"Sobel ";
-		   this->sobelToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::sobelToolStripMenuItem_Click);
+		   this->lineToolStripMenuItem->Name = L"lineToolStripMenuItem";
+		   this->lineToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->lineToolStripMenuItem->Text = L"Line";
+		   this->lineToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::lineToolStripMenuItem_Click);
 		   // 
-		   // prewittToolStripMenuItem
+		   // circleToolStripMenuItem
 		   // 
-		   this->prewittToolStripMenuItem->Name = L"prewittToolStripMenuItem";
-		   this->prewittToolStripMenuItem->Size = System::Drawing::Size(224, 26);
-		   this->prewittToolStripMenuItem->Text = L"Prewitt";
-		   this->prewittToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::prewittToolStripMenuItem_Click);
-		   // 
-		   // cannyToolStripMenuItem
-		   // 
-		   this->cannyToolStripMenuItem->Name = L"cannyToolStripMenuItem";
-		   this->cannyToolStripMenuItem->Size = System::Drawing::Size(224, 26);
-		   this->cannyToolStripMenuItem->Text = L"Canny";
-		   this->cannyToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::cannyToolStripMenuItem_Click);
+		   this->circleToolStripMenuItem->Name = L"circleToolStripMenuItem";
+		   this->circleToolStripMenuItem->Size = System::Drawing::Size(224, 26);
+		   this->circleToolStripMenuItem->Text = L"Circle";
+		   this->circleToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::circleToolStripMenuItem_Click);
 		   // 
 		   // MyForm
 		   // 
@@ -694,11 +738,70 @@ private: System::Void cannyToolStripMenuItem_Click(System::Object^ sender, Syste
 		im.data = grayImg_data;
 
 		image im2 = cannyEdgeDetection(im);
-		
+		//image im2 = cannyFilter(im);
 
 		ShowBinaryImage(im2);
 
 	}
 
+}
+
+private: System::Void gaussianBlurToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	
+
+	if (grayImg_data == NULL) {
+
+		MessageBox::Show("Gri Seviye görüntü olmadan gaussian blurring yapýlamaz");
+	}
+	else {
+
+		if (blurredImg_data == NULL) {//ilk kez blur iþlem yapýlýyorsa
+
+			image im;
+			im.w = grayImg_w;
+			im.h = grayImg_h;
+			im.c = grayImg_c;
+			im.data = grayImg_data;
+
+			image im2 = gaussianBlur(im);
+
+			ShowBinaryImage(im2);
+
+			blurredImg_data = im2.data;
+			blurredImg_w = im2.w;
+			blurredImg_h = im2.h;
+			blurredImg_c = im2.c;
+
+
+
+		}
+		else {
+
+			image im;
+			im.w = blurredImg_w;
+			im.h = blurredImg_h;
+			im.c = blurredImg_c;
+			im.data = blurredImg_data;
+
+			image im2 = gaussianBlur(im);
+
+			ShowBinaryImage(im2);
+
+			blurredImg_data = im2.data;
+			blurredImg_w = im2.w;
+			blurredImg_h = im2.h;
+			blurredImg_c = im2.c;
+
+
+		}
+
+
+	}
+
+}
+private: System::Void lineToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void circleToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 }
 };
