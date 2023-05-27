@@ -5,6 +5,9 @@
 #include "Clustering.h";
 #include "Morphology.h"
 #include "GaussianFiltering.h"
+#include "HoughTransformation.h"
+
+
 using namespace System;
 using namespace System::ComponentModel;
 using namespace System::Collections;
@@ -70,6 +73,9 @@ private:
 
 	unsigned char* blurredImg_data = NULL;
 	int blurredImg_w, blurredImg_h, blurredImg_c;
+	unsigned char* cannyImg_data = NULL;
+	int cannyImg_w, cannyImg_h, cannyImg_c;
+
 
 private: System::Windows::Forms::ToolStripMenuItem^ cCAToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ hosheToolStripMenuItem;
@@ -722,30 +728,6 @@ private: System::Void prewittToolStripMenuItem_Click(System::Object^ sender, Sys
 }
 
 
-private: System::Void cannyToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-
-	
-	if (grayImg_data == NULL) {
-
-		MessageBox::Show("Gri Seviye görüntü olmadan prewitt edge detection yapýlamaz");
-	}
-	else {
-
-		image im;
-		im.w = grayImg_w;
-		im.h = grayImg_h;
-		im.c = grayImg_c;
-		im.data = grayImg_data;
-
-		image im2 = cannyEdgeDetection(im);
-		//image im2 = cannyFilter(im);
-
-		ShowBinaryImage(im2);
-
-	}
-
-}
-
 private: System::Void gaussianBlurToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 
 	
@@ -800,7 +782,73 @@ private: System::Void gaussianBlurToolStripMenuItem_Click(System::Object^ sender
 	}
 
 }
+
+private: System::Void cannyToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+
+
+	if (grayImg_data == NULL) {
+
+		MessageBox::Show("Gri Seviye görüntü olmadan prewitt edge detection yapýlamaz");
+	}
+	else {
+
+		image im;
+		im.w = grayImg_w;
+		im.h = grayImg_h;
+		im.c = grayImg_c;
+		im.data = grayImg_data;
+
+		image im2 = cannyEdgeDetection(im);
+		//image im2 = cannyFilter(im);
+
+		ShowBinaryImage(im2);
+
+		cannyImg_data = im2.data;
+		cannyImg_w = im2.w;
+		cannyImg_h = im2.h;
+		cannyImg_c = im2.c;
+
+	}
+
+}
 private: System::Void lineToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	if (cannyImg_data == NULL) {
+
+		MessageBox::Show("Gri Seviye görüntü olmadan line detection yapýlamaz");
+	}
+	else {
+
+		image im;
+		im.w = cannyImg_w;
+		im.h = cannyImg_h;
+		im.c = cannyImg_c;
+		im.data = cannyImg_data;
+
+		/*image RGBImg;
+		RGBImg.data = grayImg_data;
+		RGBImg.w = grayImg_w;
+		RGBImg.h = grayImg_h;
+		RGBImg.c = grayImg_c;*/
+		image RGBImg;
+		RGBImg.data = RGBImg_data;
+		RGBImg.w = RGBImg_w;
+		RGBImg.h = RGBImg_h;
+		RGBImg.c = RGBImg_c;
+
+
+
+		image im2 = findLine(im,RGBImg);
+
+		//ShowGrayScaleImage(im2);
+		ShowRGBImage(im2);
+		
+
+
+
+
+	}
+
 }
 private: System::Void circleToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 }

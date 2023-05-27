@@ -4,6 +4,8 @@
 #include <iomanip>
 using namespace std;
 
+
+
 image sobelFilter(image im) {//parametre olarak gray image gelir.
 
 
@@ -90,7 +92,6 @@ image sobelFilter(image im) {//parametre olarak gray image gelir.
         }
     }
 
-
     for (int i = 0; i < EdgeImage.h; i++) {
         for (int j = 0; j < EdgeImage.w; j++) {
             float ratio = (float)EdgeImage.data[i * EdgeImage.w + j] / max;
@@ -170,6 +171,8 @@ image angleImageFilter(image im) {
         }
     }
 
+
+    //angle deðerler için 90 derece normalize
     int max = 0;
 
     for (int i = 0; i < angleImage.h; i++) {
@@ -184,7 +187,7 @@ image angleImageFilter(image im) {
     for (int i = 0; i < angleImage.h; i++) {
         for (int j = 0; j < angleImage.w; j++) {
             float ratio = (float)angleImage.data[i * angleImage.w + j] / max;
-            angleImage.data[i * angleImage.w + j] = ratio * 255;
+            angleImage.data[i * angleImage.w + j] = ratio * 90;
         }
     }
 
@@ -392,46 +395,48 @@ image gaussianBlur(image im) { //gri resmi bulanýklaþtýrmaya yarayan gaussianBlu
                     int x = i - kernel_size / 2 + k;
                     int y = j - kernel_size / 2 + l;
 
-                    if (x >= 0 && x < im.h && y >= 0 && y < im.w) {
+                    if (x >= 0 && x < im.h && y >= 0 && y < im.w) {//koordinatlarý gerçek pixeller için konvolüsyon iþlemi
                         sumX += im.data[x * im.w + y] * GKernel[k][l];
+
+                    }
+                    else {
+                        sumX += im.data[0] * GKernel[k][l];/*image çevresinde siyah pixel oluþumunu önlemek için koordinat dýþý pixellere yapay deðer
+                                                           verildi.*/
 
                     }
                 }
             }
 
-            blurredImage.data[i * im.w + j] = abs(sumX);
+            blurredImage.data[i * im.w + j] = sumX;
 
         }
 
     }
 
-    //burada resim blurlanmýþtýr.
-    //min-max normalization ile pixel deðerleri uygun aralýða çekilir.
-    int max = 0;
+   /* unsigned char minVal = blurredImage.data[0];
+    unsigned char maxVal = blurredImage.data[0];
 
-    for (int i = 0; i < blurredImage.h; i++) {
-        for (int j = 0; j < blurredImage.w; j++) {
-            int val = blurredImage.data[i * blurredImage.w + j];
-            if (val > max) {
-                max = val;
-            }
+    for (int i = 0; i < blurredImage.h * blurredImage.w; i++) {
+        if (blurredImage.data[i] < minVal) {
+            minVal = blurredImage.data[i];
+        }
+        if (blurredImage.data[i] > maxVal) {
+            maxVal = blurredImage.data[i];
         }
     }
 
-    for (int i = 0; i < blurredImage.h; i++) {
-        for (int j = 0; j < blurredImage.w; j++) {
-            float ratio = (float)blurredImage.data[i * blurredImage.w + j] / max;
-            blurredImage.data[i * blurredImage.w + j] = ratio * 255;
-        }
-    }
+    for (int i = 0; i < blurredImage.h * blurredImage.w; i++) {
+        blurredImage.data[i] = (blurredImage.data[i] - minVal) * 255 / (maxVal - minVal);
+    }*/
+
+    
 
     return blurredImage;
 }
 
-
 image nonMaximumSuppression(image edgeImage, image angleImage) {//sobel'den gelen edgeImage ve harici hesaplanan angleImage parametreleri.
 
-    
+
     image suppressedImage;//nonmaxSupp sonucunu tutacak olan image
     suppressedImage.h = edgeImage.h;
     suppressedImage.w = edgeImage.w;
@@ -439,8 +444,8 @@ image nonMaximumSuppression(image edgeImage, image angleImage) {//sobel'den gele
     suppressedImage.data = new unsigned char[edgeImage.w * edgeImage.h];
 
 
-    for (int i = 0; i < edgeImage.h; i++) {
-        for (int j = 0; j < edgeImage.w; j++) {
+    for (int i = 1; i < edgeImage.h-1; i++) {// köþedeki ve çerceve kenarlarýndaki geçersiz pixellere eriþmemek için 1 çýkarttýk ve balangýcý 1 den yaptýk.
+        for (int j = 1; j < edgeImage.w-1; j++) {
 
             suppressedImage.data[i * edgeImage.w + j] = edgeImage.data[i * edgeImage.w + j]; // Kenar olmayan piksellerin deðerini koru ve atama yap
 
@@ -450,42 +455,38 @@ image nonMaximumSuppression(image edgeImage, image angleImage) {//sobel'den gele
             }
 
             //gradyan ve theta deðerleri alýnýr.
-            double angle = edgeImage.data[i * edgeImage.w + j];
-            double gradient = angleImage.data[i * angleImage.w + j];
+            double gradient = edgeImage.data[i * edgeImage.w + j];
+            double angle = angleImage.data[i * angleImage.w + j];
 
-            // Pikselin yatay ve dikey komþularýnýn indislerini hesapla
-            int x1, y1, x2, y2;
-
-            if (angle < 0) { //açý pozitife çekilir.
-                angle += 180.0;
-            }
+            // Pikselin yatay ve dikey komþularýnýn indislerini hesapla.Komþu pixel lokasyon dep. tutacak olan int deðiþkenler.
+            int x1=0, y1=0, x2=0, y2=0;
 
             // Yatay yönde
-            if ((angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180)) {
+            if ((angle >-22.5 && angle <= 22.5) || (angle > 157.5 && angle <= 157.5)) {
                 x1 = i;
                 y1 = j - 1;
                 x2 = i;
                 y2 = j + 1;
             }
             // 45 derece yönde
-            else if (angle >= 22.5 && angle < 67.5) {
-                x1 = i - 1;
+            else if ((angle >-157.5 && angle <= -112.5) || (angle>22.5 && angle <=67.5)) {
+                x1 = i + 1;
                 y1 = j - 1;
-                x2 = i + 1;
+                x2 = i - 1;
                 y2 = j + 1;
             }
             // Dikey yönde
-            else if (angle >= 67.5 && angle < 112.5) {
-                x1 = i - 1;
+            else if ((angle > -112.5 && angle <=-67.5) || (angle > 67.5 && angle <= 112.5)) {
+                x1 = i + 1;
                 y1 = j;
-                x2 = i + 1;
+                x2 = i - 1;
                 y2 = j;
             }
             // -45 derece yönde
-            else if (angle >= 112.5 && angle < 157.5) {
-                x1 = i - 1;
+            else if ((angle > -67.5 && angle <=-22.5) || (angle > 112.5 && angle <= 157.5)) {
+                x1 = i + 1;
                 y1 = j + 1;
-                x2 = i + 1;
+                x2 = i - 1;
                 y2 = j - 1;
             }
 
@@ -508,35 +509,32 @@ image nonMaximumSuppression(image edgeImage, image angleImage) {//sobel'den gele
     return suppressedImage;
 }
 
-//histerize ve doble thresold ile edge image'i binary edge image'e dönüþütüren fonks.son 2 paramtere el ile þimdilik manuel olarak girilecek.
-
 image applyHysteresisThreshold(image im, int lowThreshold, int highThreshold) {//non-max ile gelen edge image ve 2 threshold deðeri.
 
+    //non-max suppr 'den gelen im adlý resim hala edgeImageTüründedir.Histerize ile binaryEdgeÝmage'e çevrilecek.
 
-    image edgeImage;
-    edgeImage.h = im.h;
-    edgeImage.w = im.w;
-    edgeImage.c = 1;
-    edgeImage.data = new unsigned char[im.w * im.h];
+    image binaryEdgeImage;
+    binaryEdgeImage.h = im.h;
+    binaryEdgeImage.w = im.w;
+    binaryEdgeImage.c = 1;
+    binaryEdgeImage.data = new unsigned char[im.w * im.h];
 
     // Hysteresis eþikleme iþlemi
-    for (int i = 0; i < im.h; i++) {
-        for (int j = 0; j < im.w; j++) {
+    for (int i = 1; i < im.h-1; i++) {
+        for (int j = 1; j < im.w-1; j++) {
 
-            int pixelIndex = i * im.w + j;//kolaylýk olsun diye bu sefer böyle yaptým.
-
+           
             // Pikselin deðerini kontrol et
-            int pixelValue = im.data[pixelIndex];
+            int pixelValue = im.data[i * binaryEdgeImage.w + j];
 
             // Yüksek eþik deðeri üzerindeki pikselleri kenar olarak iþaretle
             if (pixelValue >= highThreshold) {
-                edgeImage.data[pixelIndex] = 255;
+                binaryEdgeImage.data[i * binaryEdgeImage.w + j] = 255;
             }
             // Düþük eþik deðeri altýndaki pikselleri kenar olmayan olarak iþaretle
             else if (pixelValue <= lowThreshold) {
-                edgeImage.data[pixelIndex] = 0;
+                binaryEdgeImage.data[i * binaryEdgeImage.w + j] = 0;
             }
-
             // Arada kalan pikselleri komþularýna bakarak belirle.
             else {
                 bool isEdge = false;
@@ -552,7 +550,7 @@ image applyHysteresisThreshold(image im, int lowThreshold, int highThreshold) {/
 
                         // Yüksek eþik deðeri üzerindeki komþu varsa, pikseli kenar olarak iþaretle
                         if (neighborValue >= highThreshold) {
-                            edgeImage.data[pixelIndex] = 255;
+                            binaryEdgeImage.data[i * binaryEdgeImage.w + j] = 255;
                             isEdge = true;
                             break;
                         }
@@ -565,15 +563,14 @@ image applyHysteresisThreshold(image im, int lowThreshold, int highThreshold) {/
 
                 // Kenar olarak iþaretlenmeyen pikselleri kenar olmayan olarak iþaretle
                 if (!isEdge) {
-                    edgeImage.data[pixelIndex] = 0;
+                    binaryEdgeImage.data[i * binaryEdgeImage.w + j] = 0;
                 }
             }
         }
     }
 
-    return edgeImage;
+    return binaryEdgeImage;//Kenarlarý tespit edilmiiþ image return edilir.
 }
-
 
 
 image cannyEdgeDetection(image im) {
@@ -590,13 +587,13 @@ image cannyEdgeDetection(image im) {
     createGaussianKernel9x9(GKernel);
     int kernel_size = 9;*/
 
-    image blurredImage = gaussianBlur(gaussianBlur(im));//1.AÞAMA: resmi 2 defa bulanýklaþtýr.
+    image blurredImage = gaussianBlur(im);//1.AÞAMA: resmi 1 defa bulanýklaþtýr.
 
 
     image edgeImage = sobelFilter(blurredImage);//2.AÞAMA: sobel filtresi ile edge image elde et
     image angleImage = angleImageFilter(blurredImage);//2:AÞAMA: angle image
     image suppressedImage = nonMaximumSuppression(edgeImage, angleImage);//3.AÞAMA: nonmax ile kenar incelt.
-    image binaryEdgeImage = applyHysteresisThreshold(suppressedImage, 20, 100);//4.AÞAMA: histerize ile kesin kenar sonuçlarý bul.
+    image binaryEdgeImage = applyHysteresisThreshold(suppressedImage, 30, 95);//4.AÞAMA: histerize ile kesin kenar sonuçlarý bul.
 
     return binaryEdgeImage;
 

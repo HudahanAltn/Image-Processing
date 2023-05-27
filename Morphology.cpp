@@ -71,7 +71,9 @@ image Dilation(image im) {
 
     for (int i = 0; i < im.h; i++) {
         for (int j = 0; j < im.w; j++) {
+
             int min_val = 255;
+
             for (int k = 0; k < kernel_size; k++) {
                 for (int l = 0; l < kernel_size; l++) {
 

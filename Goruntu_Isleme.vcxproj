@@ -124,6 +124,7 @@
     <ClCompile Include="CCA.cpp" />
     <ClCompile Include="Clustering.cpp" />
     <ClCompile Include="GaussianFiltering.cpp" />
+    <ClCompile Include="HoughTransformation.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Morphology.cpp" />
@@ -131,11 +132,13 @@
   <ItemGroup>
     <ClInclude Include="Clustering.h" />
     <ClInclude Include="GaussianFiltering.h" />
+    <ClInclude Include="HoughTransformation.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Morphology.h" />
     <ClInclude Include="MyForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="SinglyLinkedList.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_resize.h" />
     <ClInclude Include="stb_image_writer.h" />
